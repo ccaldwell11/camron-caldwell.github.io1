@@ -9,6 +9,8 @@
  * and read every instruction carefully.
  */
 
+const { arrayOrObject } = require("../function-master/function-master");
+
 //////////////////////////////////////////////////////////////////////
 // Step 1 - Search ///////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
@@ -50,8 +52,15 @@ function remove(animals, name){
 // Step 4 - Add ///////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 function add(animals, animal){
-    for(var i = 0; i < animals.length; i++){
-        if(animals[i].name != animal.name && animal.name.length > 0 && animal.species.length > 0){
+    if (animal.name && animal.name.length > 0 && animal.species && animal.species.length > 0) {
+        var unique = true;
+        for (var i = 0; i < animals.length; i++) {
+            if (animal.name === animals[i].name) {
+                unique = false;
+                break;
+            }
+        }
+        if (unique) {
             animals.push(animal);
         }
     }

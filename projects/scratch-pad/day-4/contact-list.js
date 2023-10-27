@@ -53,8 +53,28 @@ function makeContactList() {
         // we implemented the length api for you //
         length: function() {
             return contacts.length;
-        }
-    }
+        },
+        addContact: function(contact){
+            return contacts.push(contact);
+        },
+        findContact: function(fullName){
+            return contacts.find(function (contact){
+                return (fullName === contact.nameFirst + ' ' + contact.nameLast);
+            });
+        },
+        removeContact: function(contact){
+            var i = contacts.indexOf(contact);
+            if(i !== -1){
+                contacts.splice(i, 1);
+            }
+        },
+        printAllContactNames: function(){
+            return contacts.map(function(contact){
+                return (contact.nameFirst + ' ' + contact.nameLast);
+            })
+            .join('\n');
+        },
+    };
 }
 
 

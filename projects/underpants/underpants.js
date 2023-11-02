@@ -3,6 +3,8 @@
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode
 'use strict';
 
+//const { reject } = require("lodash");
+
 var _ = {};
 
 
@@ -145,6 +147,16 @@ _.last = function(arr, num) {
 *   _.indexOf(["a","b","c"], "d") -> -1
 */
 
+_.indexOf = function(array, value){
+    for(let i = 0; i < array.length; i++){
+        if(array[i] === value){
+            return i;
+        }
+    }
+    return -1;
+}
+
+
 
 /** _.contains
 * Arguments:
@@ -161,6 +173,9 @@ _.last = function(arr, num) {
 *   _.contains([1,"two", 3.14], "two") -> true
 */
 
+_.contains = function(array, value){
+    return (array.indexOf(value) !== -1) ? true : false;
+}
 
 /** _.each
 * Arguments:
@@ -178,6 +193,18 @@ _.last = function(arr, num) {
 *      -> should log "a" "b" "c" to the console
 */
 
+_.each = function(collection, func){
+    if(Array.isArray(collection)){
+        for(let i = 0; i < collection.length; i++){
+            func(collection[i], i, collection)
+        }
+    }
+    else if(typeof collection === 'object' && collection !== null){
+        for(let key in collection){       //brush up on object iteration
+            func(collection[key], key, collection)
+        } 
+    }
+};
 
 /** _.unique
 * Arguments:
@@ -189,6 +216,15 @@ _.last = function(arr, num) {
 *   _.unique([1,2,2,4,5,6,5,2]) -> [1,2,4,5,6]
 */
 
+_.unique = function(arr){
+    var noDuplicates = [];
+    for(let i = 0; i < arr.length; i++){
+        if(_.indexOf(noDuplicates, arr[i]) === -1){
+            noDuplicates.push(arr[i]);
+        }
+    }
+    return noDuplicates;
+}
 
 /** _.filter
 * Arguments:
@@ -206,6 +242,15 @@ _.last = function(arr, num) {
 *   use _.each in your implementation
 */
 
+_.filter = function(arr, func){
+    var result = [];
+    _.each(arr, function(element, i, arr) {
+        if (func(element, i, arr)) {
+            result.push(element);
+        }
+    });
+    return result;
+}
 
 /** _.reject
 * Arguments:
@@ -220,6 +265,15 @@ _.last = function(arr, num) {
 *   _.reject([1,2,3,4,5], function(e){return e%2 === 0}) -> [1,3,5]
 */
 
+_.reject = function(arr, func){
+    var rejects = [];
+    _.each(arr, function(element, i, arr){
+        if(!func(element, i, arr)){ // without ! it equals true so the ! makes it the opposite(opp. of true)
+            rejects.push(element);
+        }
+    });
+    return rejects;
+}
 
 /** _.partition
 * Arguments:
@@ -240,6 +294,20 @@ _.last = function(arr, num) {
 }
 */
 
+_.partition = function(arr, func){
+    var trueValues = [];
+    var falseValues = [];
+
+    _.each(arr, function(element, key, arr) {
+        if (func(element, key, arr)) {
+            trueValues.push(element);
+        } else {
+            falseValues.push(element);
+        }
+    });
+
+    return [trueValues, falseValues];
+}
 
 /** _.map
 * Arguments:
@@ -257,6 +325,20 @@ _.last = function(arr, num) {
 *   _.map([1,2,3,4], function(e){return e * 2}) -> [2,4,6,8]
 */
 
+_.map = function(collection, func){
+    var final = []
+    if(Array.isArray(collection) === true){
+        _.each(collection, function(element, i, collection){
+        final.push(func(element, i, collection))
+        })
+    }
+    else if(typeof collection === 'object' && collection !== null){
+        _.each(collection, function(value, key, collection){
+        final.push(func(value, key, collection))
+        })
+    }
+    return final;
+}
 
 /** _.pluck
 * Arguments:
@@ -269,6 +351,11 @@ _.last = function(arr, num) {
 *   _.pluck([{a: "one"}, {a: "two"}], "a") -> ["one", "two"]
 */
 
+_.pluck = function(arr, property){
+    return _.map(arr, function(obj){
+        return obj[property];
+    });
+}
 
 /** _.every
 * Arguments:
@@ -290,6 +377,35 @@ _.last = function(arr, num) {
 *   _.every([2,4,6], function(e){return e % 2 === 0}) -> true
 *   _.every([1,2,3], function(e){return e % 2 === 0}) -> false
 */
+
+_.every = function(collection, func){
+    if (func === undefined) {
+        for (var i = 0; i < collection.length; i++) {
+            if (!Boolean(collection[i])) { //Boolean is the default when unaware of the true value of it...
+                return false;
+            }
+        }
+        return true;
+    }
+
+    if (Array.isArray(collection)) {
+        for (var i = 0; i < collection.length; i++) {
+            if (!func(collection[i], i, collection)) {
+                return false;
+            }
+        }
+
+    } 
+
+    else if (typeof collection === 'object' && collection !== null) {
+        for (var key in collection) {
+            if (!func(collection[key], key, collection)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 
 /** _.some
@@ -313,6 +429,34 @@ _.last = function(arr, num) {
 *   _.some([1,2,3], function(e){return e % 2 === 0}) -> true
 */
 
+_.some = function(collection, func){
+    if (func === undefined) {
+        for (var i = 0; i < collection.length; i++) {
+            if (Boolean(collection[i])) { //Boolean is the default when unaware of the true value of it...
+                return true;
+            }
+        }
+        return false;
+    }
+
+    if (Array.isArray(collection)) {
+        for (var i = 0; i < collection.length; i++) {
+            if (func(collection[i], i, collection)) {
+                return true;
+            }
+        }
+
+    } 
+
+    else if (typeof collection === 'object' && collection !== null) {
+        for (var key in collection) {
+            if (func(collection[key], key, collection)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 /** _.reduce
 * Arguments:
@@ -333,6 +477,21 @@ _.last = function(arr, num) {
 *   _.reduce([1,2,3], function(previousSum, currentValue, currentIndex){ return previousSum + currentValue }, 0) -> 6
 */
 
+_.reduce = function(arr, func, seed){
+    var final;
+    if (seed !== undefined){
+        final = seed
+           for (let i = 0; i < arr.length; i++) {
+                final = func(final, arr[i], i)
+            }
+    } else {
+        final = arr[0]
+        for (let i = 1; i < arr.length; i++){
+        final = func(final, arr[i], i)
+        }
+    }
+    return final
+}
 
 /** _.extend
 * Arguments:
@@ -348,6 +507,11 @@ _.last = function(arr, num) {
 *   _.extend(data, {b:"two"}); -> data now equals {a:"one",b:"two"}
 *   _.extend(data, {a:"two"}); -> data now equals {a:"two"}
 */
+
+_.extend = function(obj, ...passingObj){
+    Object.assign(obj, ...passingObj)
+    return obj;
+}
 
 //////////////////////////////////////////////////////////////////////
 // DON'T REMOVE THIS CODE ////////////////////////////////////////////
